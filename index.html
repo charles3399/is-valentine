@@ -279,23 +279,16 @@
                 if (slowEvasion) return false; // 50% chance to not evade
             }
 
-            const container = document.getElementById('mainContainer');
-            const containerRect = container.getBoundingClientRect();
-            const btnRect = noBtn.getBoundingClientRect();
+            // Move within a small radius around the Yes button (not too far)
+            const maxDistance = 120; // Maximum pixels away from original position
+            const angle = Math.random() * Math.PI * 2; // Random angle
+            const distance = 50 + Math.random() * (maxDistance - 50); // Between 50-120px away
 
-            // Calculate boundaries within the container
-            const maxX = containerRect.width - btnRect.width - 40;
-            const maxY = containerRect.height - btnRect.height - 20;
+            let newX = Math.cos(angle) * distance;
+            let newY = Math.sin(angle) * distance;
 
-            // Random position within container
-            let newX = Math.random() * maxX - maxX / 2;
-            let newY = Math.random() * maxY - maxY / 2;
-
-            // Make sure it doesn't overlap with the yes button too much
-            const distance = Math.sqrt(newX * newX + newY * newY);
-            if (distance < 100) {
-                newX = newX > 0 ? newX + 100 : newX - 100;
-            }
+            // Keep vertical movement smaller to stay near the Yes button row
+            newY = newY * 0.5;
 
             noBtn.style.transform = `translate(${newX}px, ${newY}px)`;
             return true; // Did evade
