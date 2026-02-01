@@ -270,13 +270,13 @@
         let catchAttempts = 0;
         const maxAttempts = 15; // After this many attempts, the button slows down
 
-        noBtn.addEventListener('mouseover', function(e) {
+        function evadePointer(e) {
             catchAttempts++;
 
             // Make it easier to catch after many attempts
             if (catchAttempts > maxAttempts) {
                 const slowEvasion = Math.random() > 0.5;
-                if (slowEvasion) return; // 50% chance to not evade
+                if (slowEvasion) return false; // 50% chance to not evade
             }
 
             const container = document.getElementById('mainContainer');
@@ -298,7 +298,20 @@
             }
 
             noBtn.style.transform = `translate(${newX}px, ${newY}px)`;
-        });
+            return true; // Did evade
+        }
+
+        // Desktop: mouseover
+        noBtn.addEventListener('mouseover', evadePointer);
+
+        // Mobile: touchstart - move button before tap registers
+        noBtn.addEventListener('touchstart', function(e) {
+            if (catchAttempts <= maxAttempts || Math.random() > 0.5) {
+                e.preventDefault(); // Prevent the tap from registering
+                evadePointer(e);
+            }
+            // After maxAttempts, 50% chance to allow the tap through
+        }, { passive: false });
 
         noBtn.addEventListener('click', function() {
             document.getElementById('mainContainer').style.display = 'none';
